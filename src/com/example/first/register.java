@@ -92,16 +92,18 @@ public class register extends Activity {
 		/* 将要发送的数据封包 */
 		ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 		nameValuePairs.add(new BasicNameValuePair("user", user));
+		nameValuePairs.add(new BasicNameValuePair("table", user+"_db"));
 		nameValuePairs.add(new BasicNameValuePair("password", password));
+		nameValuePairs.add(new BasicNameValuePair("option", "2"));
 		InputStream is = null;
 		// http post
 		try {
 			/* 创建一个HttpClient的一个对象 */
 			HttpClient httpclient = new DefaultHttpClient();
 			/* 创建一个HttpPost的对象 */
-			HttpPost httppost = new HttpPost("http://192.168.191.5/register.php");
+			HttpPost httppost = new HttpPost(NotesDbAdapter.url);
 			/* 设置请求的数据 */
-			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "utf-8"));
 			/* 创建HttpResponse对象 */
 			HttpResponse response = httpclient.execute(httppost);
 			/* 获取这次回应的消息实体 */
@@ -115,7 +117,7 @@ public class register extends Activity {
 		// convert response to string
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					is, "iso-8859-1"), 8);
+					is, "utf-8"), 8);
 			StringBuilder sb = new StringBuilder();
 			String line = null;
 			while ((line = reader.readLine()) != null) {
@@ -123,12 +125,12 @@ public class register extends Activity {
 			}
 			is.close();
 			result = sb.toString();
-			System.out.println("get = " + result + "size = "+result.length());
+			System.out.println("get = " + result + " size = "+result.length());
 		} catch (Exception e) {
 			System.out.println("Error converting to String");
 		}
 		Message msg = new Message(); 
-        if(result.equals("true"))
+        if(result.equals("1"))
         {
             msg.what = RESULT_OK; 
         }

@@ -73,7 +73,7 @@ public class ColorListAdapter extends BaseExpandableListAdapter {
         TextView view = getTextView(string); 
     	if (position==id)
         	view.setBackgroundColor(Color.parseColor("#F0FFFF"));//颜色设置
-        else if (id!=-1&&use.get(position)) {
+        else if (id!=-1&&use!=null&&use.get(position)) {
             view.setBackgroundColor(Color.parseColor("#FFDAB9"));//颜色设置
             System.out.println(position+" "+id);
         }
@@ -87,7 +87,7 @@ public class ColorListAdapter extends BaseExpandableListAdapter {
     @Override  
     public boolean isChildSelectable(int groupPosition, int childPosition) {  
         // TODO Auto-generated method stub  
-        return false;  
+        return true;  
     }  
     private TextView getTextView(String string){  
     	AbsListView.LayoutParams layoutParams = new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, 64);  

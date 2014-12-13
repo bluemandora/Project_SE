@@ -19,6 +19,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,6 +30,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class Login extends Activity {
+	private static final int login_noname = 0x1786;
 	private EditText field_user;
 	private EditText field_password;
     private Button button_confirm;
@@ -70,11 +72,18 @@ public class Login extends Activity {
              switch (msg.what) {   
                   case RESULT_OK:
                 	  	Toast.makeText(Login.this,"登录成功", Toast.LENGTH_SHORT).show(); 
-          				setResult(RESULT_OK);
+                	  	Intent it = new Intent();  
+                        it.putExtra("LOGINRESULT", ((EditText)findViewById(R.id.user)).getText()  
+                                .toString());  
+          				setResult(RESULT_OK, it);
           				finish();
                        break;   
                   case RESULT_CANCELED:
                 	  Toast.makeText(Login.this,"用户名或密码错误，请重新登录", Toast.LENGTH_LONG).show();
+                	  break;
+                  case RESULT_FIRST_USER:
+                	  Toast.makeText(Login.this,"请检查网络连接", Toast.LENGTH_LONG).show();
+                	  finish();
                 	  break;
              }   
              super.handleMessage(msg);   
@@ -87,15 +96,17 @@ public class Login extends Activity {
 		/* 将要发送的数据封包 */
 		ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 		nameValuePairs.add(new BasicNameValuePair("user", user));
+		nameValuePairs.add(new BasicNameValuePair("option", "1"));
 		InputStream is = null;
+		Message msg = new Message(); 
 		// http post
 		try {
 			/* 创建一个HttpClient的一个对象 */
 			HttpClient httpclient = new DefaultHttpClient();
 			/* 创建一个HttpPost的对象 */
-			HttpPost httppost = new HttpPost("http://192.168.191.5/test.php");
+			HttpPost httppost = new HttpPost(NotesDbAdapter.url);
 			/* 设置请求的数据 */
-			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "utf-8"));
 			/* 创建HttpResponse对象 */
 			HttpResponse response = httpclient.execute(httppost);
 			/* 获取这次回应的消息实体 */
@@ -105,11 +116,14 @@ public class Login extends Activity {
 		} catch (Exception e) {
 			System.out.println("Connectiong Error");
 			e.printStackTrace();
+			msg.what = RESULT_FIRST_USER; 
+			myHandler.sendMessage(msg); 
+			return ;
 		}
 		// convert response to string
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					is, "iso-8859-1"), 8);
+					is, "utf-8"), 8);
 			StringBuilder sb = new StringBuilder();
 			String line = null;
 			while ((line = reader.readLine()) != null) {
@@ -120,6 +134,9 @@ public class Login extends Activity {
 			System.out.println("get = " + result);
 		} catch (Exception e) {
 			System.out.println("Error converting to String");
+			msg.what = RESULT_CANCELED; 
+			myHandler.sendMessage(msg); 
+			return ;
 		}
 		// parse json data
 		try {
@@ -137,8 +154,11 @@ public class Login extends Activity {
 			}
 		} catch (JSONException e) {
 			System.out.println("Error parsing json");
+			msg.what = RESULT_CANCELED; 
+			myHandler.sendMessage(msg); 
+			return ;
 		}
-		Message msg = new Message(); 
+		
         if(ss.equals(password))
         {
             msg.what = RESULT_OK; 

@@ -15,7 +15,9 @@ public class NotesDbAdapter {
         private static final int DATABASE_VERSION = 1;
 
         private static final String DATABASE_TABLE = "notes";
-
+        
+        public static final String url = "http://1.discussnote.sinaapp.com/try.php";
+        
         public static final String KEY_ROWID = "_id";
         public static final String KEY_CONTENTS = "contents";
         public static final String KEY_NOTE = "note";
@@ -40,7 +42,6 @@ public class NotesDbAdapter {
                         + "modified INTEGER" 
                         + ");";
 
-
         public NotesDbAdapter(Context ctx) {
                 this.context = ctx;
         }
@@ -61,7 +62,7 @@ public class NotesDbAdapter {
                 ContentValues args = new ContentValues();
                 args.put(KEY_NOTE, Note);
                 args.put(KEY_CREATED, now.getTime());
-                db.execSQL("create table "+Note
+                String sql = "create table "+Note
                         +"("
                         + "_id INTEGER PRIMARY KEY," 
                         + "note TEXT," 
@@ -70,7 +71,8 @@ public class NotesDbAdapter {
                         + "executor TEXT," 
                         + "created INTEGER,"
                         + "modified INTEGER" 
-                        + ");");
+                        + ");";
+                db.execSQL(sql);
                 db.execSQL("create table "+Note+"_conflict"
                         +"("
                         + "_id INTEGER PRIMARY KEY," 
@@ -94,7 +96,10 @@ public class NotesDbAdapter {
         	    }  
                 return db.delete(DATABASE_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
         }
-        
+        public void clear() {
+        	db.execSQL("delete from "+DATABASE_TABLE);
+        	db.execSQL("VACUUM");
+        }
         // get all tables
         public Cursor getallTable() {
                  return db.query(DATABASE_TABLE, new String[] { KEY_ROWID, KEY_NOTE,
