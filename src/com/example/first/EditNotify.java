@@ -129,6 +129,8 @@ public class EditNotify extends Activity {
    };  
    
 	public void get() {
+		Toast.makeText(EditNotify.this, "正在连接...", Toast.LENGTH_LONG)
+		.show();
 		/* 存放http请求得到的结果 */
 		String result = "";
 		/* 将要发送的数据封包 */
@@ -195,6 +197,8 @@ public class EditNotify extends Activity {
 	
 	public void update(String table, long id, String note, String contents,
     		String summary, String executor) {
+		Toast.makeText(EditNotify.this, "正在连接...", Toast.LENGTH_LONG)
+		.show();
 		/* 存放http请求得到的结果 */
 		String result = "";
 		/* 将要发送的数据封包 */

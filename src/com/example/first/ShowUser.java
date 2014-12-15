@@ -115,6 +115,8 @@ public class ShowUser extends ListActivity {
         }   
    };  
 	public void getAllTable() {
+		Toast.makeText(ShowUser.this, "正在连接...", Toast.LENGTH_LONG)
+		.show();
 		/* 存放http请求得到的结果 */
 		String result = "";
 		String ss = null;

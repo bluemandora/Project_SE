@@ -54,6 +54,8 @@ public class Login extends Activity {
             	if (user == null || password == null)
             		setResult(RESULT_CANCELED);
             	else {
+            		Toast.makeText(Login.this, "正在连接...", Toast.LENGTH_LONG)
+					.show();
             		new Thread(new Runnable(){  
             			@Override  
             		     public void run() {  
@@ -134,7 +136,7 @@ public class Login extends Activity {
 			System.out.println("get = " + result);
 		} catch (Exception e) {
 			System.out.println("Error converting to String");
-			msg.what = RESULT_CANCELED; 
+			msg.what = RESULT_FIRST_USER; 
 			myHandler.sendMessage(msg); 
 			return ;
 		}

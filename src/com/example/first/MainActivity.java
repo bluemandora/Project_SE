@@ -349,6 +349,8 @@ public class MainActivity extends ListActivity {
 	};
 
 	private void SearchUser() {
+		Toast.makeText(MainActivity.this, "正在连接...", Toast.LENGTH_LONG)
+		.show();
 		/* 存放http请求得到的结果 */
 		String result = "";
 		String ss = null;
@@ -432,6 +434,8 @@ public class MainActivity extends ListActivity {
 	}
 
 	private void myUpload() {
+		Toast.makeText(MainActivity.this, "正在连接...", Toast.LENGTH_LONG)
+		.show();
 		System.out.println("in up");
 		/* 存放http请求得到的结果 */
 		cursor = dbHelper.getallTable();
@@ -555,6 +559,8 @@ public class MainActivity extends ListActivity {
 	}
 
 	void myDownload() {
+		Toast.makeText(MainActivity.this, "正在连接...", Toast.LENGTH_LONG)
+		.show();
 		/* 存放http请求得到的结果 */
 		String result = "";
 		String ss = null;

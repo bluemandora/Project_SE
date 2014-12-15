@@ -57,6 +57,8 @@ public class register extends Activity {
             		Toast.makeText(register.this,"两次输入的密码不一致", Toast.LENGTH_LONG).show();
             	}
             	else {
+            		Toast.makeText(register.this, "正在连接...", Toast.LENGTH_LONG)
+					.show();
             		new Thread(new Runnable(){  
             			@Override  
             		     public void run() {  
@@ -81,6 +83,10 @@ public class register extends Activity {
                   case RESULT_CANCELED:
                 	  Toast.makeText(register.this,"用户名已存在", Toast.LENGTH_LONG).show();
                 	  break;
+                  case RESULT_FIRST_USER:
+                	  Toast.makeText(register.this,"请检查网络连接", Toast.LENGTH_SHORT).show(); 
+        				setResult(RESULT_CANCELED);
+        				finish();
              }   
              super.handleMessage(msg);   
         }   
@@ -96,6 +102,7 @@ public class register extends Activity {
 		nameValuePairs.add(new BasicNameValuePair("password", password));
 		nameValuePairs.add(new BasicNameValuePair("option", "2"));
 		InputStream is = null;
+		Message msg = new Message(); 
 		// http post
 		try {
 			/* 创建一个HttpClient的一个对象 */
@@ -113,6 +120,9 @@ public class register extends Activity {
 		} catch (Exception e) {
 			System.out.println("Connectiong Error");
 			e.printStackTrace();
+			msg.what = RESULT_FIRST_USER;
+			myHandler.sendMessage(msg);
+			return ;
 		}
 		// convert response to string
 		try {
@@ -128,8 +138,11 @@ public class register extends Activity {
 			System.out.println("get = " + result + " size = "+result.length());
 		} catch (Exception e) {
 			System.out.println("Error converting to String");
+			msg.what = RESULT_FIRST_USER;
+			myHandler.sendMessage(msg);
+			return ;
 		}
-		Message msg = new Message(); 
+		
         if(result.equals("1"))
         {
             msg.what = RESULT_OK; 

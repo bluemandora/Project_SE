@@ -120,8 +120,8 @@ public class ShowUserNote extends ExpandableListActivity {
                         intent2.putExtra(NotesDbAdapter.KEY_ROWID, id);
                         intent2.putExtra("TABLE", Table);
                         intent2.putExtra("contents", childArray.get(pos).get(0));
-                        intent2.putExtra("summary", childArray.get(pos).get(0));
-                        intent2.putExtra("executor", childArray.get(pos).get(0));
+                        intent2.putExtra("summary", childArray.get(pos).get(1));
+                        intent2.putExtra("executor", childArray.get(pos).get(2));
                         intent2.putExtra("note", groupArray.get(pos));
                         startActivityForResult(intent2, ACTIVITY_EDIT);
                         break;
@@ -153,6 +153,8 @@ public class ShowUserNote extends ExpandableListActivity {
    };  
    
 	public void getAll() {
+		Toast.makeText(ShowUserNote.this, "正在连接...", Toast.LENGTH_LONG)
+		.show();
 		/* 存放http请求得到的结果 */
 		String result = "";
 		/* 将要发送的数据封包 */
