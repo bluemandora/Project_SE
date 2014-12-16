@@ -63,6 +63,8 @@ public class ShowUser extends ListActivity {
 
 	private void setAdapter() {
 		show=new ArrayList<Map<String,Object>>();
+		Toast.makeText(ShowUser.this, "正在连接...", Toast.LENGTH_LONG)
+		.show();
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -115,8 +117,6 @@ public class ShowUser extends ListActivity {
         }   
    };  
 	public void getAllTable() {
-		Toast.makeText(ShowUser.this, "正在连接...", Toast.LENGTH_LONG)
-		.show();
 		/* 存放http请求得到的结果 */
 		String result = "";
 		String ss = null;

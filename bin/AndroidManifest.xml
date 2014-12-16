@@ -108,7 +108,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-          <service android:name=".PushService"></service> 
+        <service
+            android:name=".PushService"
+            android:enabled="true">
+        </service>
     </application>
 
 </manifest>

@@ -212,6 +212,8 @@ public class MainActivity extends ListActivity {
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
 							input = inputServer2.getText().toString();
+							Toast.makeText(MainActivity.this, "正在连接...", Toast.LENGTH_LONG)
+							.show();
 							new Thread(new Runnable() {
 								@Override
 								public void run() {
@@ -287,6 +289,8 @@ public class MainActivity extends ListActivity {
 	}
 
 	public void Upload() {
+		Toast.makeText(MainActivity.this, "正在连接...", Toast.LENGTH_LONG)
+		.show();
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -300,6 +304,8 @@ public class MainActivity extends ListActivity {
 	public void Download() {
 		clearLocal();
 		fillData();
+		Toast.makeText(MainActivity.this, "正在连接...", Toast.LENGTH_LONG)
+		.show();
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -349,8 +355,7 @@ public class MainActivity extends ListActivity {
 	};
 
 	private void SearchUser() {
-		Toast.makeText(MainActivity.this, "正在连接...", Toast.LENGTH_LONG)
-		.show();
+		
 		/* 存放http请求得到的结果 */
 		String result = "";
 		String ss = null;
@@ -434,8 +439,6 @@ public class MainActivity extends ListActivity {
 	}
 
 	private void myUpload() {
-		Toast.makeText(MainActivity.this, "正在连接...", Toast.LENGTH_LONG)
-		.show();
 		System.out.println("in up");
 		/* 存放http请求得到的结果 */
 		cursor = dbHelper.getallTable();
@@ -559,8 +562,6 @@ public class MainActivity extends ListActivity {
 	}
 
 	void myDownload() {
-		Toast.makeText(MainActivity.this, "正在连接...", Toast.LENGTH_LONG)
-		.show();
 		/* 存放http请求得到的结果 */
 		String result = "";
 		String ss = null;

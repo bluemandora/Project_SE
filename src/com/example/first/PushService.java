@@ -27,14 +27,18 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
+import android.widget.Toast;
 
 public class PushService extends Service {
 
 	// 获取消息线程
 	private MessageThread messageThread = null;
+	private static final int RESULT_OK = -1;
+	private static final int RESULT_CANCELED = 0;
 
 	// 点击查看
 	private Intent messageIntent = null;
@@ -72,7 +76,17 @@ public class PushService extends Service {
 
 		return super.onStartCommand(intent, flags, startId);
 	}
-
+	Handler myHandler = new Handler() {
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case RESULT_OK:
+				showNotification(send, receive, table, note, contents,
+						summary, executor, id, did);
+				break;
+			}
+			super.handleMessage(msg);
+		}
+	};
 	public void showNotification(String send, String receive, String table,
 			String note, String contents, String summary, String executor,
 			Long pid, Long did) {
@@ -96,7 +110,7 @@ public class PushService extends Service {
 				messageIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		
 		messageNotification.setLatestEventInfo(
-				PushService.this, "新修改", serverMessage+"修改了你的代码",
+				PushService.this, "新修改", serverMessage+"修改了你的笔记",
 				messagePendingIntent);
 		messageNotificatioManager.notify(messageNotificationID,
 			messageNotification);
@@ -117,13 +131,14 @@ public class PushService extends Service {
 					// 获取服务器消息
 					serverMessage = getServerMessage();
 					if (serverMessage != null && !"".equals(serverMessage)) {
-						showNotification(send, receive, table, note, contents,
-								summary, executor, id, did);
+						Message msg = new Message();
+						msg.what = RESULT_OK;
+						myHandler.sendMessage(msg);
 						// 每次通知完，通知ID递增一下，避免消息覆盖掉
 						messageNotificationID++;
 					}
 					// 休息10分钟
-					Thread.sleep(600000);
+					Thread.sleep(10000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

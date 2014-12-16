@@ -37,6 +37,8 @@ public class EditNotify extends Activity {
     private long id, did;
     private String send, receive, table, Note, Contents, Summary, Executor;
     private String myNote, myContents, mySummary, myExecutor;
+    private static final int Download_OK = 0x1324;
+	private static final int Download_CANCELED = 0x1536;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,12 +75,13 @@ public class EditNotify extends Activity {
             Summary = extras != null ? extras.getString("summary") : null;
             Executor = extras != null ? extras.getString("executor") : null;
            System.out.println(table+" "+send+" "+receive);
+           Toast.makeText(EditNotify.this, "正在连接...", Toast.LENGTH_LONG)
+   		.show();
            new Thread(new Runnable() {
    			@Override
    			public void run() {
    				// TODO Auto-generated method stub
    				get();
-   				showNote();
                 button_confirm.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View view) {
                     	new Thread(new Runnable() {
@@ -115,7 +118,10 @@ public class EditNotify extends Activity {
     }
     Handler myHandler = new Handler() {  
         public void handleMessage(Message msg) {   
-             switch (msg.what) {   
+             switch (msg.what) {  
+             	  case Download_OK:
+             		  showNote();
+             		  break;
                   case RESULT_OK:
                 	  Toast.makeText(EditNotify.this,"修改成功", Toast.LENGTH_SHORT).show(); 
                 	  
@@ -129,8 +135,6 @@ public class EditNotify extends Activity {
    };  
    
 	public void get() {
-		Toast.makeText(EditNotify.this, "正在连接...", Toast.LENGTH_LONG)
-		.show();
 		/* 存放http请求得到的结果 */
 		String result = "";
 		/* 将要发送的数据封包 */
@@ -139,6 +143,7 @@ public class EditNotify extends Activity {
 		nameValuePairs.add(new BasicNameValuePair("id", Long.valueOf(did).toString()));
 		nameValuePairs.add(new BasicNameValuePair("option", "10"));
 		InputStream is = null;
+		Message msg = new Message();
 		// http post
 		try {
 			/* 创建一个HttpClient的一个对象 */
@@ -156,6 +161,9 @@ public class EditNotify extends Activity {
 		} catch (Exception e) {
 			System.out.println("Connectiong Error");
 			e.printStackTrace();
+			msg.what = Download_CANCELED;
+			myHandler.sendMessage(msg);
+			return ;
 		}
 		// convert response to string
 		try {
@@ -171,8 +179,13 @@ public class EditNotify extends Activity {
 			System.out.println("get = " + result);
 		} catch (Exception e) {
 			System.out.println("Error converting to String");
+			msg.what = Download_CANCELED;
+			myHandler.sendMessage(msg);
+			return ;
 		}
 		if (result==null) {
+			msg.what = Download_CANCELED;
+			myHandler.sendMessage(msg);
 			return ;
 		}
 		// parse json data
@@ -192,13 +205,17 @@ public class EditNotify extends Activity {
 			}
 		} catch (JSONException e) {
 			System.out.println("Error parsing json");
+			msg.what = Download_CANCELED;
+			myHandler.sendMessage(msg);
+			return ;
 		}
+		msg.what = Download_OK;
+		myHandler.sendMessage(msg);
+		return ;
 	}
 	
 	public void update(String table, long id, String note, String contents,
     		String summary, String executor) {
-		Toast.makeText(EditNotify.this, "正在连接...", Toast.LENGTH_LONG)
-		.show();
 		/* 存放http请求得到的结果 */
 		String result = "";
 		/* 将要发送的数据封包 */

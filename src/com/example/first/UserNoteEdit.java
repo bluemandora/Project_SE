@@ -67,6 +67,8 @@ public class UserNoteEdit extends Activity {
         showNote();
         button_confirm.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+            	Toast.makeText(UserNoteEdit.this, "正在连接...", Toast.LENGTH_LONG)
+        		.show();
             	new Thread(new Runnable() {
         			@Override
         			public void run() {
@@ -106,8 +108,6 @@ public class UserNoteEdit extends Activity {
    };  
    
 	public void update() {
-		Toast.makeText(UserNoteEdit.this, "正在连接...", Toast.LENGTH_LONG)
-		.show();
 		/* 存放http请求得到的结果 */
 		String result = "";
 		/* 将要发送的数据封包 */

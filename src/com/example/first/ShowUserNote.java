@@ -68,6 +68,8 @@ public class ShowUserNote extends ExpandableListActivity {
         	Table = extras != null ? extras.getString("table") : null;
         }
         setTitle(Table);
+        Toast.makeText(ShowUserNote.this, "正在连接...", Toast.LENGTH_LONG)
+		.show();
         new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -147,14 +149,15 @@ public class ShowUserNote extends ExpandableListActivity {
                   case RESULT_CANCELED:
                 	  Toast.makeText(ShowUserNote.this,"加载失败，请检查网络连接", Toast.LENGTH_LONG).show();
                 	  break;
+                  case RESULT_FIRST_USER:
+                	  Toast.makeText(ShowUserNote.this,"加载成功", Toast.LENGTH_LONG).show();
+                	  break;
              }   
              super.handleMessage(msg);   
         }   
    };  
    
 	public void getAll() {
-		Toast.makeText(ShowUserNote.this, "正在连接...", Toast.LENGTH_LONG)
-		.show();
 		/* 存放http请求得到的结果 */
 		String result = "";
 		/* 将要发送的数据封包 */
@@ -181,6 +184,8 @@ public class ShowUserNote extends ExpandableListActivity {
 			System.out.println("Connectiong Error");
 			e.printStackTrace();
 			msg.what = RESULT_CANCELED; 
+			myHandler.sendMessage(msg);
+			return;
 		}
 		// convert response to string
 		try {
@@ -197,9 +202,11 @@ public class ShowUserNote extends ExpandableListActivity {
 		} catch (Exception e) {
 			System.out.println("Error converting to String");
 			msg.what = RESULT_CANCELED; 
+			myHandler.sendMessage(msg);
+			return;
 		}
 		if (result==null) {
-			msg.what=RESULT_OK;
+			msg.what=RESULT_FIRST_USER;
 			myHandler.sendMessage(msg);
 			return ;
 		}
@@ -222,7 +229,9 @@ public class ShowUserNote extends ExpandableListActivity {
 			}
 		} catch (JSONException e) {
 			System.out.println("Error parsing json");
-			msg.what = RESULT_CANCELED; 
+			msg.what = RESULT_FIRST_USER; 
+			myHandler.sendMessage(msg); 
+			return ;
 		}
 		msg.what = RESULT_OK; 
         // 发送消息
