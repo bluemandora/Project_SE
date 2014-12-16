@@ -22,13 +22,15 @@ public class MyListAdapter extends BaseAdapter {
     private Context context;  
     // 用来导入布局  
     private LayoutInflater inflater = null;  
+    private long id;
     // 构造器  
-    public MyListAdapter(Cursor list, Context context, ArrayList<Boolean> use) {  
+    public MyListAdapter(Cursor list, Context context, ArrayList<Boolean> use, long id) {  
         this.context = context;  
         this.list = list;  
         this.use = use;
         inflater = LayoutInflater.from(context);  
         isSelected = new HashMap<Integer, Boolean>();  
+        id = id;
         // 初始化数据  
         initDate();  
     }  
@@ -86,6 +88,7 @@ public class MyListAdapter extends BaseAdapter {
         holder.tv.setText(list.getString(list.getColumnIndex(NotesDbAdapter.KEY_NOTE)));  
         // 根据isSelected来设置checkbox的选中状况  
         holder.cb.setChecked(getIsSelected().get(position));  
+        System.out.println(position+" "+id);
         return convertView;  
     }  
   

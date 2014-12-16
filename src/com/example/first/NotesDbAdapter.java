@@ -80,6 +80,13 @@ public class NotesDbAdapter {
                         + "role2 INTEGER,"
                         + "created INTEGER" 
                         + ");");
+                db.execSQL("create table "+Note+"_ascend"
+                        +"("
+                        + "_id INTEGER PRIMARY KEY," 
+                        + "role1 INTEGER," 
+                        + "role2 INTEGER,"
+                        + "created INTEGER" 
+                        + ");");
                 return db.insert(DATABASE_TABLE, null, args);
         }
         
@@ -93,6 +100,7 @@ public class NotesDbAdapter {
         	        System.out.println(mCursor.getString(Nameindex));
         	        db.execSQL("DROP TABLE IF EXISTS " + mCursor.getString(Nameindex));
         	        db.execSQL("DROP TABLE IF EXISTS " + mCursor.getString(Nameindex)+"_conflict");
+        	        db.execSQL("DROP TABLE IF EXISTS " + mCursor.getString(Nameindex)+"_ascend");
         	    }  
                 return db.delete(DATABASE_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
         }
@@ -149,6 +157,7 @@ public class NotesDbAdapter {
         
         // add a conflict
         public long createConfict(String table, long a, long b) {
+        		if (a==b) return -1;
                 Date now = new Date();
                 ContentValues args = new ContentValues();
                 args.put(KEY_A, a); 
@@ -159,8 +168,28 @@ public class NotesDbAdapter {
                 return id;
         }
         
-        // delete conflict
+        // add a ascend
+        public long createAscend(String table, long a, long b) {
+        		if (a==b) return -1;
+                Date now = new Date();
+                ContentValues args = new ContentValues();
+                args.put(KEY_A, a); 
+                args.put(KEY_B, b); 
+                args.put(KEY_CREATED, now.getTime());
+                long id = db.insert(table+"_ascend", null, args);
+                System.out.println("db add " + a + " "+ b);
+                return id;
+        }
+        
+        // delete ascend
+        public void deleteAscend(String table, long a, long b) {
+        	if (a==b) return;
+        	db.execSQL("delete from "+table+"_ascend"+" where role1="+a+" and "+"role2="+b);
+        }
+        
+     // delete conflict
         public void deleteConfict(String table, long a, long b) {
+        	if (a==b) return;
         	db.execSQL("delete from "+table+"_conflict"+" where role1="+a+" and "+"role2="+b);
         }
         
@@ -172,6 +201,12 @@ public class NotesDbAdapter {
         // get conflict
         public Cursor getConfict(String table, long id) {
         	Cursor mCursor = db.rawQuery("select * from "+table+"_conflict"+" where role1="+id, null);
+        	return mCursor;
+        }
+        
+     // get conflict
+        public Cursor getAscend(String table, long id) {
+        	Cursor mCursor = db.rawQuery("select * from "+table+"_ascend"+" where role1="+id, null);
         	return mCursor;
         }
 

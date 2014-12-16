@@ -239,7 +239,9 @@ public class MainActivity extends ListActivity {
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 		Intent intent = new Intent(this, ShowNote.class);
-		intent.putExtra(NotesDbAdapter.KEY_ROWID, id);
+		cursor=dbHelper.getTable(id);
+    	String Table = cursor.getString(cursor.getColumnIndexOrThrow(NotesDbAdapter.KEY_NOTE));
+		intent.putExtra("table", Table);
 		startActivityForResult(intent, ACTIVITY_EDIT);
 	}
 

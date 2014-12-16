@@ -2,40 +2,63 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
-    <EditText 
-        android:id="@+id/note"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="@string/edit"
-        />
-    <EditText 
-        android:id="@+id/contents"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="内容"
-        />
-    <TextView 
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="结论："
-        />
-    <EditText 
-        android:id="@+id/summary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="摘要"
-        />
-    <EditText 
-        android:id="@+id/executor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="执行者"
-        />
-	<Button 
-	    android:id="@+id/confirm"
-	    android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-		android:text="@string/confirm"
-	    />
+    android:orientation="vertical"
+    android:weightSum="2" 
+    android:background="@drawable/pian">
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1" >
+    </ScrollView>
+
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1" >
+		<LinearLayout
+        	android:id="@+id/container"
+        	android:orientation="vertical"  
+        	android:layout_width="fill_parent"  
+        	android:layout_height="wrap_content"  
+        >  
+        <EditText
+            android:id="@+id/note"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/edit" />
+
+        <EditText
+            android:id="@+id/contents"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="内容" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="结论：" />
+
+        <EditText
+            android:id="@+id/summary"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="摘要" />
+
+        <EditText
+            android:id="@+id/executor"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="执行者" />
+
+        <Button
+            android:id="@+id/confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/confirm" />
+        </LinearLayout> 
+    </ScrollView>
+
 </LinearLayout>

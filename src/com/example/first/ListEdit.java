@@ -6,6 +6,7 @@ import com.example.first.MyListAdapter.ViewHolder;
 
 import android.R.integer;
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
@@ -24,7 +25,7 @@ public class ListEdit extends Activity {
     private int checkNum; // 记录选中的条目数量  
     private TextView tv_show;// 用于显示选中的条目数量  
     private NotesDbAdapter dbHelper;
-    private String Table = null;
+    private String Table = null, from;
     private ArrayList<Boolean> use;
     private Long id;
     /** Called when the activity is first created. */  
@@ -42,18 +43,25 @@ public class ListEdit extends Activity {
         Bundle extras = getIntent().getExtras();
         id = extras != null ? extras.getLong(NotesDbAdapter.KEY_ROWID) : null;
         Table = extras != null ? extras.getString("TABLE") : null;
+        from = extras != null ? extras.getString("from") : null;
         list=dbHelper.getall(Table);
         getUse();
         // 实例化自定义的MyAdapter  
-        mAdapter = new MyListAdapter(list, this, use);  
+        mAdapter = new MyListAdapter(list, this, use, id);  
         // 绑定Adapter  
         lv.setAdapter(mAdapter);  
         // 全选按钮的回调接口  
         bt_finish.setOnClickListener(new OnClickListener() {  
             @Override  
             public void onClick(View v) {  
-            	dbHelper.close();
-                finish();
+            	if (from.equals("confict"))
+            		finish();
+            	else {
+            		Intent intent = new Intent(ListEdit.this, NoteEdit.class);
+                    intent.putExtra(NotesDbAdapter.KEY_ROWID, id);
+                    intent.putExtra("TABLE", Table);
+                    startActivity(intent);
+            	}
             }  
         });  
   
@@ -71,12 +79,23 @@ public class ListEdit extends Activity {
                 // 调整选定条目  
                 if (holder.cb.isChecked() == true) {  
                     checkNum++;  
-                    dbHelper.createConfict(Table, id, arg3+1);
-                    dbHelper.createConfict(Table, arg3+1, id);
+                    if (from.equals("confict")) {
+                    	dbHelper.createConfict(Table, id, arg3+1);
+                    	dbHelper.createConfict(Table, arg3+1, id);
+                    } else {
+                    	dbHelper.createAscend(Table, id, arg3+1);
+                    	dbHelper.createAscend(Table, arg3+1, id);
+                    }
                 } else {  
                     checkNum--; 
-                    dbHelper.deleteConfict(Table, id, arg3+1);
-                    dbHelper.deleteConfict(Table, arg3+1, id);
+                    if (from.equals("confict")) {
+                    	dbHelper.deleteConfict(Table, id, arg3+1);
+                    	dbHelper.deleteConfict(Table, arg3+1, id);
+                    } else {
+                    	dbHelper.deleteAscend(Table, id, arg3+1);
+                    	dbHelper.deleteAscend(Table, arg3+1, id);
+                    	
+                    }
                 }  
                 // 用TextView显示  
                 tv_show.setText("已选中" + checkNum + "项");  
@@ -88,13 +107,18 @@ public class ListEdit extends Activity {
     	use = new ArrayList<Boolean>();
     	for (int i=0; i<list.getCount(); i++)
     		use.add(false);
-    	Cursor mCursor = dbHelper.getConfict(Table, id);
+    	Cursor mCursor = dbHelper.getallTable();
+    	if (from.equals("confict"))
+    		mCursor = dbHelper.getConfict(Table, id);
+    	else 
+    		mCursor = dbHelper.getAscend(Table, id);
     	System.out.println(id+" "+Table);
     	System.out.println("size:"+mCursor.getCount());
     	while (mCursor.moveToNext()) {  
 	        int Nameindex = mCursor.getColumnIndex(NotesDbAdapter.KEY_B); 
 	        use.set(mCursor.getInt(Nameindex)-1, true);
 	        System.out.println("!!");
+	        checkNum++;
 	    }  
     }
     // 刷新listview和TextView的显示  

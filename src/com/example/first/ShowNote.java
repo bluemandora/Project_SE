@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.R.anim;
+import android.R.integer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ExpandableListActivity;
@@ -35,7 +36,9 @@ public class ShowNote extends ExpandableListActivity {
 	protected final int menuCleanColor=Menu.FIRST+6;
 	protected final int menuEdit=Menu.FIRST+7;
 	protected final int menuSearch=Menu.FIRST+8;
+	protected final int menuShowAscends=Menu.FIRST+9;
 	private static final int ACTIVITY_EDIT = 0x1001;
+	private static final int SET_CONFICT = 0x1002;
 	private List<String> groupArray;  
     private List<List<String>> childArray; 
     private NotesDbAdapter dbHelper;
@@ -58,15 +61,13 @@ public class ShowNote extends ExpandableListActivity {
         dbHelper.open();
         if (Table==null) {
         	Bundle extras = getIntent().getExtras();
-        	rowID = extras != null ? extras.getLong(NotesDbAdapter.KEY_ROWID) : null;
-        	cursor=dbHelper.getTable(rowID);
-        	Table = cursor.getString(cursor.getColumnIndexOrThrow(NotesDbAdapter.KEY_NOTE));
+        	Table = extras != null ? extras.getString("table") : null;
         }
-        fillData();
+        fillData(0);
     }
-    private void fillData() {
+    private void fillData(int flag) {
         cursor = dbHelper.getall(Table);
-        getUse();
+        getUse(flag);
         groupArray = new ArrayList<String>();  
         childArray = new ArrayList<List<String>>();  
         while (cursor.moveToNext()) {
@@ -85,7 +86,7 @@ public class ShowNote extends ExpandableListActivity {
     }
     private void fillData(String item) {
         cursor = dbHelper.searchNote(Table, item);
-        getUse();
+        getUse(0);
         groupArray = new ArrayList<String>();  
         childArray = new ArrayList<List<String>>();  
         while (cursor.moveToNext()) {
@@ -122,10 +123,11 @@ public class ShowNote extends ExpandableListActivity {
                     String noteName = "New Note";
                     long id = dbHelper.create(Table, noteName, null, null, null);
                     System.out.println("new"+id);
-                    Intent intent = new Intent(this, NoteEdit.class);
+                    Intent intent = new Intent(this, ListEdit.class);
                     intent.putExtra(NotesDbAdapter.KEY_ROWID, id);
                     intent.putExtra("TABLE", Table);
-                    startActivityForResult(intent, ACTIVITY_EDIT);
+                    intent.putExtra("from", "ascends");
+                    startActivity(intent);
                     break;
             case menuSearch:
             	final EditText inputServer = new EditText(this);
@@ -154,7 +156,7 @@ public class ShowNote extends ExpandableListActivity {
             	dbHelper.deleteConfict(Table);
             	break;
             }
-            fillData();
+            fillData(0);
             return super.onOptionsItemSelected(item);
     }
 
@@ -166,8 +168,10 @@ public class ShowNote extends ExpandableListActivity {
     protected void onActivityResult(int requestCode, int resultCode,
                                     Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-
-        fillData();
+        if (requestCode == SET_CONFICT && resultCode == RESULT_OK)
+        	fillData(1);
+        else 
+        	fillData(0);
     }
 
     /**
@@ -180,6 +184,7 @@ public class ShowNote extends ExpandableListActivity {
             menu.add(0, menuEdit, 0,  "±‡º≠»’÷æ");
             menu.add(0, menuSetConficts, 0,  "…Ë÷√√¨∂‹");
             menu.add(0, menuShowConficts, 0,  "œ‘ æ√¨∂‹");
+            menu.add(0, menuShowAscends, 0,  "œ‘ æ◊∑À›");
             super.onCreateContextMenu(menu, v, menuInfo);
     }
     
@@ -195,19 +200,24 @@ public class ShowNote extends ExpandableListActivity {
                     case menuDelete : 
                             Log.d("MENU", "group"+id) ;
                             dbHelper.delete(Table, id) ; 
-                            fillData() ; 
+                            fillData(0) ; 
                             break;
                     case menuSetConficts : 
                     	Intent intent = new Intent(this, ListEdit.class);
                     	intent.putExtra(NotesDbAdapter.KEY_ROWID, id);
                         intent.putExtra("TABLE", Table);
-                        startActivityForResult(intent, ACTIVITY_EDIT);
+                        intent.putExtra("from", "confict");
+                        startActivityForResult(intent, SET_CONFICT);
                         centerID=id;
-                        fillData();
+                        fillData(1);
                         break;
                     case menuShowConficts: 
                         centerID=id;
-                        fillData();
+                        fillData(1);
+                        break;
+                    case menuShowAscends: 
+                        centerID=id;
+                        fillData(2);
                         break;
                     case menuEdit:
                     	System.out.println("edit id:"+id);
@@ -219,13 +229,19 @@ public class ShowNote extends ExpandableListActivity {
             }
             return super.onContextItemSelected(item);
     }
-    private void getUse()
+    private void getUse(int flag)
     {
     	use = new ArrayList<Boolean>();
     	for (int i=0; i<cursor.getCount(); i++)
     		use.add(false);
     	if (centerID==0) return ;
-    	Cursor mCursor = dbHelper.getConfict(Table, centerID);
+    	Cursor mCursor = dbHelper.getall(Table);
+    	if (flag==1)
+    		mCursor = dbHelper.getConfict(Table, centerID);
+    	else if (flag==2)
+    		mCursor = dbHelper.getAscend(Table, centerID);
+    	else 
+    		return ;
     	while (mCursor.moveToNext()) {  
 	        int Nameindex = mCursor.getColumnIndex(NotesDbAdapter.KEY_B); 
 	        use.set(mCursor.getInt(Nameindex)-1, true);

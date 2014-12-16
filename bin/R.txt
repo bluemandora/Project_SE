@@ -235,6 +235,9 @@ int drawable abc_textfield_searchview_holo_light 0x7f020054
 int drawable abc_textfield_searchview_right_holo_dark 0x7f020055
 int drawable abc_textfield_searchview_right_holo_light 0x7f020056
 int drawable ic_launcher 0x7f020057
+int drawable icon 0x7f020058
+int drawable pian 0x7f020059
+int drawable tu 0x7f02005a
 int id LinearLayout01 0x7f05003c
 int id action_bar 0x7f05001c
 int id action_bar_activity_content 0x7f050015
@@ -247,7 +250,7 @@ int id action_context_bar 0x7f05001d
 int id action_menu_divider 0x7f050016
 int id action_menu_presenter 0x7f050017
 int id action_mode_close_button 0x7f050024
-int id action_settings 0x7f05004f
+int id action_settings 0x7f050052
 int id activity_chooser_view_content 0x7f050025
 int id always 0x7f05000b
 int id beginning 0x7f050011
@@ -255,7 +258,8 @@ int id bt_finish 0x7f050048
 int id checkbox 0x7f05002d
 int id collapseActionView 0x7f05000d
 int id confirm 0x7f050045
-int id confirmPassword 0x7f05004e
+int id confirmPassword 0x7f050051
+int id container 0x7f050050
 int id contents 0x7f05003e
 int id default_activity_button 0x7f050028
 int id dialog 0x7f05000e
@@ -290,6 +294,8 @@ int id password 0x7f05004d
 int id progress_circular 0x7f050018
 int id progress_horizontal 0x7f050019
 int id radio 0x7f05002f
+int id scrollView1 0x7f05004e
+int id scrollView2 0x7f05004f
 int id search_badge 0x7f050032
 int id search_bar 0x7f050031
 int id search_button 0x7f050033
