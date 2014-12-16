@@ -44,7 +44,14 @@ public class EditNotify extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.check);//编辑的时候使用另一个UI
         findViews();
-        showAndUpdateNote(savedInstanceState);
+        showAndUpdateNote();
+    }
+    @Override
+    protected void onNewIntent(Intent intent) {
+    	// TODO Auto-generated method stub
+    	super.onNewIntent(intent);
+    	setIntent(intent);
+    	showAndUpdateNote();
     }
     
     private void findViews() {
@@ -63,7 +70,7 @@ public class EditNotify extends Activity {
      * 编辑修改备忘并且保存
      * @param savedInstanceState
      */
-    private void showAndUpdateNote(Bundle savedInstanceState) {
+    private void showAndUpdateNote() {
             Bundle extras = getIntent().getExtras();
             id = extras != null ? extras.getLong("id") : null;
             did = extras != null ? extras.getLong("did") : null;

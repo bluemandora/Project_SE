@@ -21,6 +21,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.R.anim;
+import android.R.integer;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -40,19 +42,14 @@ public class PushService extends Service {
 	private static final int RESULT_OK = -1;
 	private static final int RESULT_CANCELED = 0;
 
-	// 点击查看
-	private Intent messageIntent = null;
-	private PendingIntent messagePendingIntent = null;
-
 	// 通知栏消息
 	private int messageNotificationID = 1000;
-	private Notification messageNotification = null;
 	private NotificationManager messageNotificatioManager = null;
 	private String serverMessage;
 	private Long id, did;
 	private String send, receive, table, note, contents, summary, executor,
 			name;
-
+	private int currentapi = android.os.Build.VERSION.SDK_INT;
 	public IBinder onBind(Intent intent) {
 		return null;
 	}
@@ -62,12 +59,7 @@ public class PushService extends Service {
 		// 初始化
 		name = intent.getStringExtra("name");
 		System.out.println("in service, name is " + name);
-		messageNotification = new Notification();
-		messageNotification.icon = R.drawable.ic_launcher;
-		messageNotification.tickerText = "新消息";
-		messageNotification.defaults = Notification.DEFAULT_SOUND;
 		messageNotificatioManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		messageNotification.flags|=Notification.FLAG_AUTO_CANCEL;
 
 		// 开启线程
 		messageThread = new MessageThread();
@@ -76,6 +68,12 @@ public class PushService extends Service {
 
 		return super.onStartCommand(intent, flags, startId);
 	}
+	
+	public void onDestroy() {
+		System.out.println("destroy");
+		messageThread.isRunning = false;
+		super.onDestroy();
+	};
 	Handler myHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
@@ -90,9 +88,15 @@ public class PushService extends Service {
 	public void showNotification(String send, String receive, String table,
 			String note, String contents, String summary, String executor,
 			Long pid, Long did) {
-		messageIntent = new Intent(this, EditNotify.class);
-
+		Notification messageNotification = new Notification();
+		messageNotification.icon = R.drawable.ic_launcher;
+		messageNotification.tickerText = "新消息";
+		messageNotification.defaults = Notification.DEFAULT_SOUND;
+		
+		messageNotification.flags|=Notification.FLAG_AUTO_CANCEL;
+		Intent messageIntent = new Intent(this, EditNotify.class);
 		System.out.println("in notifi: " + table + " " + send + " " + summary);
+		System.out.println("id: "+messageNotificationID);
 		messageIntent.putExtra("id", pid);
 		messageIntent.putExtra("did", did);
 		messageIntent.putExtra("send", send);
@@ -102,12 +106,12 @@ public class PushService extends Service {
 		messageIntent.putExtra("contents", contents);
 		messageIntent.putExtra("summary", summary);
 		messageIntent.putExtra("executor", executor);
-
-		messageIntent.addFlags(Intent.FILL_IN_DATA);
 		messageIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		messageIntent.setAction(String.valueOf(System.currentTimeMillis()));
-		messagePendingIntent = PendingIntent.getActivity(this, 0,
+		messageIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		
+		PendingIntent messagePendingIntent = PendingIntent.getActivity(this, messageNotificationID,
 				messageIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		
 		
 		messageNotification.setLatestEventInfo(
 				PushService.this, "新修改", serverMessage+"修改了你的笔记",
